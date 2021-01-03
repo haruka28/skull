@@ -42,3 +42,40 @@ class Player:
 
     def lose(self):
         del self.cards[random.randint(0, len(self.cards) - 1)]
+
+    def challenge(self, game):
+        count = 0
+        if len(self.cards) == 0:
+            print("Illegal calling player ID")
+        print("Player " + str(self.id) + " challenging")
+        # flip own stash
+        if 1 in self.stash:
+            print("Player " + str(self.id) + " self-destructed")
+        count += len(self.stash)
+        if count >= game.cur_call:
+            print("Challenging player " + str(self.id) + \
+                    " won the challenge with own stash")
+        # start challenging the remaining rounds
+        for i in range(game.cur_call - len(self.stash)):
+            ids = []
+            for p in game.players:
+                if p.id == self.id:
+                    continue
+                if len(p.stash) > 0 and len(p.cards) > 0:
+                    ids.append(p.id)
+            c = ids[random.randint(0, len(ids) - 1)]
+            if (game.players[c].stash.pop() == 1):
+                print("Challenging player " + str(self.id) + \
+                        " busted by player " + str(c))
+                self.lose()
+                break
+            else:
+                count += 1
+        if count == game.cur_call:
+            print("Challenging player " + str(self.id) + \
+                    " won the challenge")
+            self.wins += 1
+            if self.wins > 1:
+                print ("Player " + str(self.id) + " won the game")
+                game.end  = True
+        game.resetAfterChallenge()

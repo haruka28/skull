@@ -18,11 +18,11 @@ class Game:
 
     def round0(self):
         # first round, everyone puts down a card
-        game.status()
+        self.status()
         print("Initiation round")
         for player in self.players:
             player.play(False, [], True)
-        game.status()
+        self.status()
 
     def curCount(self):
         res = 0
@@ -61,56 +61,23 @@ class Game:
             print("Player " + str(player.id) + " passed")
             self.passes += 1
             if self.passes == len(self.players) - 1:
-                self.challenge()
+                if self.calling < 0:
+                    print("Invalid calling player ID")
+                else:
+                    self.players[self.calling].challenge(self)
         if r > 2:
             self.cur_call = r - 2
             print("Player " + str(player.id) + " called " + str(self.cur_call))
             self.calling = player.id
             # reset current pass count
             self.passes = 0
-        game.status()
+        self.status()
 
-    def challenge(self):
-        count = 0
-        if self.calling < 0 or self.calling > len(self.players) - 1 or \
-                len(self.players[self.calling].cards) == 0:
-            print("Illegal calling player ID")
-        player = self.players[self.calling]
-        print("Player " + str(self.calling) + " challenging")
-        print("Player " + str(player.id) + " challenging")
-        # current calling player challenges
-        # flip own stash
-        if 1 in player.stash:
-            print("Player " + str(self.calling) + " self-destructed")
-        count += len(player.stash)
-        # start challenging the remaining rounds
-        for i in range(self.cur_call - len(player.stash)):
-            ids = []
-            for p in self.players:
-                if p.id == self.calling:
-                    continue
-                if len(p.stash) > 0 and len(p.cards) > 0:
-                    ids.append(p.id)
-            c = ids[random.randint(0, len(ids) - 1)]
-            if (self.players[c].stash.pop() == 1):
-                print("Challenging player " + str(self.calling) + \
-                        " busted by player " + str(c))
-                print("Challenging player " + str(player.id) + \
-                        " busted by player " + str(c))
-                player.lose()
-                break
-            else:
-                count += 1
-        if count == self.cur_call:
-            print("Challenging player " + str(self.calling) + \
-                    " won the challenge")
-            player.wins += 1
-            if player.wins > 1:
-                print ("Player " + str(self.calling) + " won the game")
-                self.end  = True
+    def resetAfterChallenge(self):
         for player in self.players:
             player.reset()
         self.cur_player = self.calling
         self.cur_call = 0
         self.passes = 0
         self.calling = -1
+
