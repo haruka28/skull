@@ -9,11 +9,11 @@ class Player:
 
     def status(self):
         if self.wins == 2:
-            return "Player " + str(self.id) + " has won "
-        if len(self.cards) == 0:
-            return "Player " + str(self.id) + " is out "
-        return "Player " + str(self.id) + " has cards " + str(self.cards) + \
-            " and stash " + str(self.stash)
+            return "Player {} has won with 2 wins ".format(self.id)
+        elif len(self.cards) == 0:
+            return "Player {} is out ".format(self.id)
+        else:
+            return "Player {} has cards {} and stash {} ".format(self.id, self.cards, self.stash)
 
     def play(self, can_pass, call_range, can_stash):
         # 2 for pass
@@ -47,14 +47,13 @@ class Player:
         count = 0
         if len(self.cards) == 0:
             print("Illegal calling player ID")
-        print("Player " + str(self.id) + " challenging")
+        print("Player {} challenging".format(self.id))
         # flip own stash
         if 1 in self.stash:
-            print("Player " + str(self.id) + " self-destructed")
+            print("Player {} self-destructed".format(self.id))
         count += len(self.stash)
         if count >= game.cur_call:
-            print("Challenging player " + str(self.id) + \
-                    " won the challenge with own stash")
+            print("Challenging player {} won the challenge with own stash".format(self.id))
         # start challenging the remaining rounds
         for i in range(game.cur_call - len(self.stash)):
             ids = []
@@ -65,17 +64,15 @@ class Player:
                     ids.append(p.id)
             c = ids[random.randint(0, len(ids) - 1)]
             if (game.players[c].stash.pop() == 1):
-                print("Challenging player " + str(self.id) + \
-                        " busted by player " + str(c))
+                print("Challenging player {} busted by player {}".format(self.id, c))
                 self.lose()
                 break
             else:
                 count += 1
         if count == game.cur_call:
-            print("Challenging player " + str(self.id) + \
-                    " won the challenge")
+            print("Challenging player {} won the challenge".format(self.id))
             self.wins += 1
             if self.wins > 1:
-                print ("Player " + str(self.id) + " won the game")
+                print ("Player {} won the game".format(self.id))
                 game.end  = True
         game.resetAfterChallenge()

@@ -31,23 +31,19 @@ class Game:
                 res += len(player.stash)
         return res
 
-    def play(self):
-        if self.end:
-            return
+    def proceed(self):
+        if self.end: return
         alive = []
         for p in self.players:
             if len(p.cards) > 0:
                 alive.append(p.id)
         if len(alive) == 1:
-            print("Player " + str(alive[0]) +
-                    " has won as the only player alive")
+            print("Player {} has won as the only player alive".format(alive[0]))
             self.end = True
             return
-        print("Player " + str(self.cur_player) + "'s turn")
+        print("Player {}'s turn".format(self.cur_player))
         player = self.players[self.cur_player]
-        self.cur_player += 1
-        if self.cur_player > len(self.players) - 1:
-            self.cur_player = self.cur_player - len(self.players)
+        self.cur_player = (self.cur_player + 1) % len(self.players)
         # player can pass as long as there is an active call
         # player can call from cur_call + 1, up to total number of cards
         # player can stash until calling as started
@@ -56,9 +52,9 @@ class Game:
             call_range = [self.cur_call + 3, self.curCount() + 2]
         r = player.play(self.cur_call > 0, call_range, self.cur_call == 0)
         if r < 2:
-            print("Player " + str(player.id) + " stashed a card")
+            print("Player {} stashed a card".format(player.id))
         if r == 2:
-            print("Player " + str(player.id) + " passed")
+            print("Player {} passed".format(player.id))
             self.passes += 1
             if self.passes == len(self.players) - 1:
                 if self.calling < 0:
@@ -67,7 +63,7 @@ class Game:
                     self.players[self.calling].challenge(self)
         if r > 2:
             self.cur_call = r - 2
-            print("Player " + str(player.id) + " called " + str(self.cur_call))
+            print("Player {} called {}".format(player.id, self.cur_call))
             self.calling = player.id
             # reset current pass count
             self.passes = 0
@@ -81,3 +77,12 @@ class Game:
         self.passes = 0
         self.calling = -1
 
+    def start(self):
+        self.round0()
+        turn = 1
+        while True:
+            print("Turn {}".format(turn))
+            turn += 1
+            self.proceed()
+            if self.end: break
+            print("")
