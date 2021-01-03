@@ -15,18 +15,27 @@ class Player:
         else:
             return "Player {} has cards {} and stash {} ".format(self.id, self.cards, self.stash)
 
-    def play(self, can_pass, call_range, can_stash):
+    def initiate(self):
+        self.stashCard(self.cards[random.randint(0, len(self.cards) - 1)])
+
+    def play(self, game):
         # 2 for pass
         if len(self.cards) == 0:
             # can only pass
             return 2
         moves = []
-        if can_pass:
+        # player can pass as long as there is an active call
+        # player can call from cur_call + 1, up to total number of cards
+        # player can stash until calling as started
+        call_range = []
+        if game.curCount() > game.cur_call:
+            call_range = [game.cur_call + 3, game.curCount() + 2]
+        if game.cur_call > 0:
             moves.append(2)
         # call id is actual call + 2, e.g. calling for 1 flower is represented
         # as 3
         moves += call_range
-        if can_stash and len(self.cards) > len(self.stash):
+        if game.cur_call == 0 and len(self.cards) > len(self.stash):
             moves += self.cards
             # remove already stashed cards
             for c in self.stash:
@@ -34,8 +43,11 @@ class Player:
         # randomize
         m = moves[random.randint(0, len(moves) - 1)]
         if m < 2:
-            self.stash.append(m)
+            self.stashCard(m)
         return m
+
+    def stashCard(self, card):
+        self.stash.append(card)
 
     def reset(self):
         self.stash = []

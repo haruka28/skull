@@ -16,12 +16,12 @@ class Game:
         for player in self.players:
             print(player.status())
 
-    def round0(self):
+    def initiate(self):
         # first round, everyone puts down a card
         self.status()
         print("Initiation round")
         for player in self.players:
-            player.play(False, [], True)
+            player.initiate()
         self.status()
 
     def curCount(self):
@@ -44,13 +44,7 @@ class Game:
         print("Player {}'s turn".format(self.cur_player))
         player = self.players[self.cur_player]
         self.cur_player = (self.cur_player + 1) % len(self.players)
-        # player can pass as long as there is an active call
-        # player can call from cur_call + 1, up to total number of cards
-        # player can stash until calling as started
-        call_range = []
-        if self.curCount() > self.cur_call:
-            call_range = [self.cur_call + 3, self.curCount() + 2]
-        r = player.play(self.cur_call > 0, call_range, self.cur_call == 0)
+        r = player.play(self)
         if r < 2:
             print("Player {} stashed a card".format(player.id))
         if r == 2:
@@ -78,7 +72,7 @@ class Game:
         self.calling = -1
 
     def start(self):
-        self.round0()
+        self.initiate()
         turn = 1
         while True:
             print("Turn {}".format(turn))
