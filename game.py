@@ -66,10 +66,17 @@ class Game:
     def resetAfterChallenge(self):
         for player in self.players:
             player.reset()
-        self.cur_player = self.calling
+            player.initiate()
         self.cur_call = 0
         self.passes = 0
         self.calling = -1
+
+    def getAllPlayersAlive(self):
+        res = []
+        for player in self.players:
+            if len(player.cards) > 0:
+                res.append(player.id)
+        return res
 
     def start(self):
         self.initiate()
