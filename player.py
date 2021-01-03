@@ -48,47 +48,23 @@ class Player:
     def reset(self):
         self.stash = []
 
-    def lose(self):
+    # return next starting player id
+    def loseChallenge(self, game, killer):
         del self.cards[random.randint(0, len(self.cards) - 1)]
-
-    def challenge(self, game):
-        # challenger becomes next player
-        game.cur_player = self.id
-        count = 0
+        # override next starting player
         if len(self.cards) == 0:
-            print("Illegal calling player ID")
-        print("Player {} challenging".format(self.id))
-        # flip own stash
-        if 1 in self.stash:
-            print("Player {} self-destructed".format(self.id))
-            self.lose()
-            # if a self busted player is out, they pick the next challenger.
-            if len(self.cards) == 0:
-                self.pick_strategy(self, game)
-            game.resetAfterChallenge()
-            return
-        count += len(self.stash)
-        if count >= game.cur_call:
-            print("Challenging player {} won the challenge with own stash".format(self.id))
-        # start challenging the remaining rounds
-        for i in range(game.cur_call - len(self.stash)):
-            reveal_player = self.reveal_strategy(self, game)
-            reveal = game.players[reveal_player].stash.pop()
-            if (reveal == 1):
-                print("Challenging player {} busted by player {}".format(self.id, reveal_player))
-                self.lose()
-                # if a busted player is out, the killer is the next challenger.
-                if len(self.cards) == 0:
-                    game.cur_player = reveal_player
-                game.resetAfterChallenge()
-                return
+            if killer == self.id:
+                # if a self busted player is out, they pick the next challenger.
+                return self.pick_strategy(self, game)
             else:
-                count += 1
-        if count != game.cur_call:
-            print("Error?")
-        print("Challenging player {} won the challenge".format(self.id))
-        self.wins += 1
-        if self.wins > 1:
-            print ("Player {} won the game".format(self.id))
-            game.end = True
-        game.resetAfterChallenge()
+                # if a busted player is out, the killer is the next challenger.
+                return killer
+        return self.id
+
+    # return player id to reveal
+    def reveal(self, game):
+        # needs to flip own stash first
+        if len(self.stash) > 0:
+            return self.id
+        else:
+            return self.reveal_strategy(self, game)

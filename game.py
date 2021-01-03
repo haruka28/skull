@@ -54,7 +54,10 @@ class Game:
                 if self.calling < 0:
                     print("Invalid calling player ID")
                 else:
-                    self.players[self.calling].challenge(self)
+                    # challenging player becomes next starting player.
+                    # this may be overridden if challenging player is out.
+                    self.cur_player = self.calling
+                    self.startChallenge()
         if r > 2:
             self.cur_call = r - 2
             print("Player {} called {}".format(player.id, self.cur_call))
@@ -62,6 +65,26 @@ class Game:
             # reset current pass count
             self.passes = 0
         self.status()
+
+    def startChallenge(self):
+        player = self.players[self.calling]
+        print("Player {} challenging".format(player.id))
+        count = 0
+        while count < self.cur_call:
+            count += 1
+            reveal_player = player.reveal(self)
+            reveal = self.players[reveal_player].stash.pop()
+            if (reveal == 1):
+                print("Challenging player {} busted by player {}".format(player.id, reveal_player))
+                self.cur_player = player.loseChallenge(self, reveal_player)
+                self.resetAfterChallenge()
+                return
+        print("Challenging player {} won the challenge".format(player.id))
+        player.wins += 1
+        if player.wins > 1:
+            print("Player {} won the game".format(player.id))
+            self.end = True
+        self.resetAfterChallenge()
 
     def resetAfterChallenge(self):
         for player in self.players:
