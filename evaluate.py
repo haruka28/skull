@@ -18,4 +18,3 @@ if __name__ == "__main__":
         players.append(Player(4, move_strategy = MoveStrategy.noBluff))
         res[Game(players, False).start()] += 1
     print(res)
-

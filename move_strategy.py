@@ -3,8 +3,7 @@ import random
 class MoveStrategy:
     @staticmethod
     def randomize(player, game):
-        # 2 for pass
-        if len(player.cards) == 0:
+        if len(player.cards) == 0 or player.id in game.passed:
             # can only pass
             return "p"
         moves = []
@@ -30,13 +29,12 @@ class MoveStrategy:
 
     @staticmethod
     def noBluff(player, game):
-        # 2 for pass
-        if len(player.cards) == 0:
+        if len(player.cards) == 0 or player.id in game.passed:
             # can only pass
             return "p"
         moves = []
         # player can pass as long as there is an active call
-        # player can call from cur_call + 1, up to total number of cards
+        # player can call from cur_call + 1, up to total number of cards, as long as they have not already passed this round
         # player can stash until calling as started
         if game.cur_call > 0:
             moves.append("p")

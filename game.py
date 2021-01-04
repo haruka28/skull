@@ -5,7 +5,7 @@ class Game:
         self.players = players
         self.cur_player = 0
         self.cur_call = 0
-        self.passes = 0
+        self.passed = []
         self.calling = -1
         self.end = False
         self.winner = -1
@@ -47,8 +47,9 @@ class Game:
             self.log("Player {} stashed a card".format(player.id))
         if r == "p":
             self.log("Player {} passed".format(player.id))
-            self.passes += 1
-            if self.passes == len(self.players) - 1:
+            if player.id not in self.passed:
+                self.passed.append(player.id)
+            if len(self.passed) == len(self.players) - 1:
                 if self.calling < 0:
                     self.log("Invalid calling player ID")
                 else:
@@ -60,8 +61,6 @@ class Game:
             self.cur_call = int(r[1:])
             self.log("Player {} called {}".format(player.id, self.cur_call))
             self.calling = player.id
-            # reset current pass count
-            self.passes = 0
         self.status()
 
     def startChallenge(self):
@@ -88,7 +87,7 @@ class Game:
             player.reset()
             player.initiate()
         self.cur_call = 0
-        self.passes = 0
+        self.passed = []
         self.calling = -1
 
     def getAllPlayersAlive(self):
