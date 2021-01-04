@@ -4,6 +4,9 @@ import random
 class MoveStrategy:
     @staticmethod
     def randomize(player, game):
+        # if no card in stash and self has card, stash a card.
+        if len(player.stash) == 0 and len(player.cards) > 0:
+            return StashStrategy.defaultStash(player, game)
         moves = []
         # player can pass as long as there is an active call
         # player can call from cur_call + 1, up to total number of cards
@@ -27,6 +30,9 @@ class MoveStrategy:
 
     @staticmethod
     def noBluffRandomize(player, game):
+        # if no card in stash and self has card, stash a card.
+        if len(player.stash) == 0 and len(player.cards) > 0:
+            return StashStrategy.defaultStash(player, game)
         moves = []
         # player can pass as long as there is an active call
         # player can call from cur_call + 1, up to total number of cards, as long as they have not already passed this round
@@ -54,6 +60,9 @@ class MoveStrategy:
 
     @staticmethod
     def safeBluffRandomize(player, game):
+        # if no card in stash and self has card, stash a card.
+        if len(player.stash) == 0 and len(player.cards) > 0:
+            return StashStrategy.defaultStash(player, game)
         moves = []
         # player can pass as long as there is an active call
         # player can call from cur_call + 1, up to total number of cards, as long as they have not already passed this round
@@ -83,3 +92,11 @@ class MoveStrategy:
         if m.startswith("s"):
             player.stashCard(int(m[1:]))
         return m
+
+class StashStrategy:
+    @staticmethod
+    def defaultStash(player, game):
+        card = player.cards[random.randint(0, len(player.cards) - 1)]
+        player.stashCard(card)
+        return "s" + str(card)
+

@@ -20,7 +20,7 @@ class Game:
         self.status()
         self.log("Initiation round")
         for player in self.players:
-            player.initiate()
+            player.play(self)
         self.status()
 
     def getAllStashCount(self):
@@ -85,7 +85,7 @@ class Game:
     def resetAfterChallenge(self):
         for player in self.players:
             player.reset()
-            player.initiate()
+            player.play(self)
         self.cur_call = 0
         self.passed = []
         self.calling = -1

@@ -5,7 +5,7 @@ from pick_strategy import PickStrategy
 from reveal_strategy import RevealStrategy
 from discard_strategy import DiscardStrategy
 
-RUNS = 100000
+RUNS = 10000
 
 if __name__ == "__main__":
     res = [0] * 5

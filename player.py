@@ -34,11 +34,6 @@ class Player:
         else:
             return "Player {} has cards {} and stash {} ".format(self.id, self.cards, self.stash)
 
-    # TODO: Move this to move strategy.
-    def initiate(self):
-        if len(self.cards) > 0:
-            self.stashCard(self.cards[random.randint(0, len(self.cards) - 1)])
-
     def play(self, game):
         if len(self.cards) == 0 or self.id in game.passed:
             # can only pass
