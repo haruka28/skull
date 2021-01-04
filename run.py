@@ -1,8 +1,12 @@
 from game import Game
+from player import Player
 
 NUM_PLAYERS = 5
 
 if __name__ == "__main__":
-    game = Game(NUM_PLAYERS)
+    players = []
+    for i in range(NUM_PLAYERS):
+        players.append(Player(i))
+    game = Game(players)
     game.start()
 

@@ -13,7 +13,7 @@ class MoveStrategy:
         # player can stash until calling as started
         call_range = []
         if game.curCount() > game.cur_call:
-            call_range = [game.cur_call + 3, game.curCount() + 2]
+            call_range = range(game.cur_call + 3, game.curCount() + 3)
         if game.cur_call > 0:
             moves.append(2)
         # call id is actual call + 2, e.g. calling for 1 flower is represented

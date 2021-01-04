@@ -1,25 +1,24 @@
 import random
-from player import Player
 
 class Game:
-    def __init__(self, num_players):
-        self.players = []
-        for i in range(num_players):
-            self.players.append(Player(i))
+    def __init__(self, players, verbose = True):
+        self.players = players
         self.cur_player = 0
         self.cur_call = 0
         self.passes = 0
         self.calling = -1
         self.end = False
+        self.winner = -1
+        self.verbose = verbose
 
     def status(self):
         for player in self.players:
-            print(player.status())
+            self.log(player.status())
 
     def initiate(self):
         # first round, everyone puts down a card
         self.status()
-        print("Initiation round")
+        self.log("Initiation round")
         for player in self.players:
             player.initiate()
         self.status()
@@ -32,27 +31,26 @@ class Game:
         return res
 
     def proceed(self):
-        if self.end: return
+        if self.winner >= 0: return
         alive = []
         for p in self.players:
             if len(p.cards) > 0:
                 alive.append(p.id)
         if len(alive) == 1:
-            print("Player {} has won as the only player alive".format(alive[0]))
-            self.end = True
+            self.endGame(alive[0], "Player {} has won as the only player alive".format(alive[0]))
             return
-        print("Player {}'s turn".format(self.cur_player))
+        self.log("Player {}'s turn".format(self.cur_player))
         player = self.players[self.cur_player]
         self.cur_player = (self.cur_player + 1) % len(self.players)
         r = player.play(self)
         if r < 2:
-            print("Player {} stashed a card".format(player.id))
+            self.log("Player {} stashed a card".format(player.id))
         if r == 2:
-            print("Player {} passed".format(player.id))
+            self.log("Player {} passed".format(player.id))
             self.passes += 1
             if self.passes == len(self.players) - 1:
                 if self.calling < 0:
-                    print("Invalid calling player ID")
+                    self.log("Invalid calling player ID")
                 else:
                     # challenging player becomes next starting player.
                     # this may be overridden if challenging player is out.
@@ -60,7 +58,7 @@ class Game:
                     self.startChallenge()
         if r > 2:
             self.cur_call = r - 2
-            print("Player {} called {}".format(player.id, self.cur_call))
+            self.log("Player {} called {}".format(player.id, self.cur_call))
             self.calling = player.id
             # reset current pass count
             self.passes = 0
@@ -68,22 +66,21 @@ class Game:
 
     def startChallenge(self):
         player = self.players[self.calling]
-        print("Player {} challenging".format(player.id))
+        self.log("Player {} challenging".format(player.id))
         count = 0
         while count < self.cur_call:
             count += 1
             reveal_player = player.reveal(self)
             reveal = self.players[reveal_player].stash.pop()
             if (reveal == 1):
-                print("Challenging player {} busted by player {}".format(player.id, reveal_player))
+                self.log("Challenging player {} busted by player {}".format(player.id, reveal_player))
                 self.cur_player = player.loseChallenge(self, reveal_player)
                 self.resetAfterChallenge()
                 return
-        print("Challenging player {} won the challenge".format(player.id))
+        self.log("Challenging player {} won the challenge".format(player.id))
         player.wins += 1
         if player.wins > 1:
-            print("Player {} won the game".format(player.id))
-            self.end = True
+            self.endGame(player.id, "Player {} won the game".format(player.id))
         self.resetAfterChallenge()
 
     def resetAfterChallenge(self):
@@ -104,9 +101,18 @@ class Game:
     def start(self):
         self.initiate()
         turn = 1
-        while True:
-            print("Turn {}".format(turn))
+        while self.winner == -1:
+            self.log("Turn {}".format(turn))
             turn += 1
             self.proceed()
-            if self.end: break
-            print("")
+            self.log("")
+        return self.winner
+
+    def endGame(self, winner, message):
+        self.end = True
+        self.winner = winner
+        self.log(message)
+
+    def log(self, message):
+        if self.verbose:
+            print(message)
