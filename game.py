@@ -23,7 +23,7 @@ class Game:
             player.initiate()
         self.status()
 
-    def curCount(self):
+    def getAllStashCount(self):
         res = 0
         for player in self.players:
             if (len(player.cards) > 0):

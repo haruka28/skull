@@ -40,6 +40,9 @@ class Player:
             self.stashCard(self.cards[random.randint(0, len(self.cards) - 1)])
 
     def play(self, game):
+        if len(self.cards) == 0 or self.id in game.passed:
+            # can only pass
+            return "p"
         return self.move_strategy(self, game)
 
     def stashCard(self, card):
