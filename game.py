@@ -43,9 +43,9 @@ class Game:
         player = self.players[self.cur_player]
         self.cur_player = (self.cur_player + 1) % len(self.players)
         r = player.play(self)
-        if r < 2:
+        if r.startswith("s"):
             self.log("Player {} stashed a card".format(player.id))
-        if r == 2:
+        if r == "p":
             self.log("Player {} passed".format(player.id))
             self.passes += 1
             if self.passes == len(self.players) - 1:
@@ -56,8 +56,8 @@ class Game:
                     # this may be overridden if challenging player is out.
                     self.cur_player = self.calling
                     self.startChallenge()
-        if r > 2:
-            self.cur_call = r - 2
+        if r.startswith("c"):
+            self.cur_call = int(r[1:])
             self.log("Player {} called {}".format(player.id, self.cur_call))
             self.calling = player.id
             # reset current pass count
