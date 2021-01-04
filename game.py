@@ -1,9 +1,9 @@
 import random
 
 class Game:
-    def __init__(self, players, verbose = True):
+    def __init__(self, players, verbose = True, starting = 0):
         self.players = players
-        self.cur_player = 0
+        self.cur_player = starting
         self.cur_call = 0
         self.passed = []
         self.calling = -1
