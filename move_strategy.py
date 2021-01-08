@@ -140,6 +140,31 @@ class MoveStrategy:
             player.stashCard(int(m[1:]))
         return m
 
+    @staticmethod
+    def passiveSkull(player, game):
+        # passive skull strategy just stashes skulls all the time. This will not cause them to win. They are just making others lose xD.
+        if game.cur_call == 0:
+            if len(player.cards) > len(player.stash):
+                if 1 in player.cards and not 1 in player.stash:
+                    player.stashCard(1)
+                    return "s1"
+                else:
+                    player.stashCard(0)
+                    return "s0"
+            else:
+                # no cards to play, and calling has not started. player has to call.
+                return "c1"
+        else:
+            # calling has started. just pass.
+            return "p"
+
+    @staticmethod
+    def passiveSkull50(player, game):
+        if player.nonce > 4:
+            return MoveStrategy.passiveSkull(player, game)
+        else:
+            return MoveStrategy.safeBluffRandomize(player, game)
+
 class StashStrategy:
     @staticmethod
     def defaultStash(player, game):

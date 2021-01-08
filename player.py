@@ -25,6 +25,8 @@ class Player:
         self.reveal_strategy = reveal_strategy
         self.pick_strategy = pick_strategy
         self.discard_strategy = discard_strategy
+        # resets per challenge
+        self.nonce = random.randint(0, 9)
 
     def status(self):
         if self.wins == 2:
@@ -45,6 +47,7 @@ class Player:
 
     def reset(self):
         self.stash = []
+        self.nonce = random.randint(0, 9)
 
     # return next starting player id
     def loseChallenge(self, game, killer):
