@@ -26,7 +26,7 @@ class Game:
     def getAllStashCount(self):
         res = 0
         for player in self.players:
-            if (len(player.cards) > 0):
+            if not player.isOut():
                 res += len(player.stash)
         return res
 
@@ -34,7 +34,7 @@ class Game:
         if self.winner >= 0: return
         alive = []
         for p in self.players:
-            if len(p.cards) > 0:
+            if not p.isOut():
                 alive.append(p.id)
         if len(alive) == 1:
             self.endGame(alive[0], "Player {} has won as the only player alive".format(alive[0]))
@@ -91,11 +91,7 @@ class Game:
         self.calling = -1
 
     def getAllPlayersAlive(self):
-        res = []
-        for player in self.players:
-            if len(player.cards) > 0:
-                res.append(player.id)
-        return res
+        return [player.id for player in self.players if not player.isOut()]
 
     def start(self):
         self.initiate()

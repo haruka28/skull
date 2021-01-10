@@ -1,23 +1,20 @@
 import math
 import random
 
+# player can pass as long as there is an active call
+# player can call from cur_call + 1, up to total number of cards
+# player can stash until calling as started
 class MoveStrategy:
     @staticmethod
     def randomize(player, game):
-        # if no card in stash and self has card, stash a card.
-        if len(player.stash) == 0 and len(player.cards) > 0:
+        # Initiation round
+        if player.shouldInitiate():
             return StashStrategy.defaultStash(player, game)
         moves = []
-        # player can pass as long as there is an active call
-        # player can call from cur_call + 1, up to total number of cards
-        # player can stash until calling as started
         if game.cur_call > 0:
             moves.append("p")
-        if game.cur_call == 0 and len(player.cards) > len(player.stash):
-            moves += ["s" + str(x) for x in player.cards]
-            # remove already stashed cards
-            for c in player.stash:
-                moves.remove("s" + str(c))
+        if game.cur_call == 0:
+            moves += ["s" + str(x) for x in player.getHand()]
         call_range = []
         if game.getAllStashCount() > game.cur_call:
             call_range = range(game.cur_call + 1, game.getAllStashCount() + 1)
@@ -30,20 +27,14 @@ class MoveStrategy:
 
     @staticmethod
     def noBluffRandomize(player, game):
-        # if no card in stash and self has card, stash a card.
-        if len(player.stash) == 0 and len(player.cards) > 0:
+        # Initiation round
+        if player.shouldInitiate():
             return StashStrategy.defaultStash(player, game)
         moves = []
-        # player can pass as long as there is an active call
-        # player can call from cur_call + 1, up to total number of cards, as long as they have not already passed this round
-        # player can stash until calling as started
         if game.cur_call > 0:
             moves.append("p")
-        if game.cur_call == 0 and len(player.cards) > len(player.stash):
-            moves += ["s" + str(x) for x in player.cards]
-            # remove already stashed cards
-            for c in player.stash:
-                moves.remove("s" + str(c))
+        if game.cur_call == 0:
+            moves += ["s" + str(x) for x in player.getHand()]
         call_range = []
         # in this strategy, do not call if there is skull in own stash
         if game.getAllStashCount() > game.cur_call and not 1 in player.stash:
@@ -60,20 +51,14 @@ class MoveStrategy:
 
     @staticmethod
     def safeBluffRandomize(player, game):
-        # if no card in stash and self has card, stash a card.
-        if len(player.stash) == 0 and len(player.cards) > 0:
+        # Initiation round
+        if player.shouldInitiate():
             return StashStrategy.defaultStash(player, game)
         moves = []
-        # player can pass as long as there is an active call
-        # player can call from cur_call + 1, up to total number of cards, as long as they have not already passed this round
-        # player can stash until calling as started
         if game.cur_call > 0:
             moves.append("p")
-        if game.cur_call == 0 and len(player.cards) > len(player.stash):
-            moves += ["s" + str(x) for x in player.cards]
-            # remove already stashed cards
-            for c in player.stash:
-                moves.remove("s" + str(c))
+        if game.cur_call == 0:
+            moves += ["s" + str(x) for x in player.getHand()]
         call_range = []
         stash_count = game.getAllStashCount()
         if stash_count > game.cur_call:
@@ -96,8 +81,8 @@ class MoveStrategy:
     @staticmethod
     def aipincaihuiying(player, game):
         # aipingcaihuiying prefers putting down rose and trusting others
-        # if no card in stash and self has card, stash a card.
-        if len(player.stash) == 0 and len(player.cards) > 0:
+        # Initiation round
+        if player.shouldInitiate():
             if 0 in player.cards:
                 player.stashCard(0)
                 return "s0"
@@ -105,16 +90,10 @@ class MoveStrategy:
                 player.stashCard(1)
                 return "s1"
         moves = []
-        # player can pass as long as there is an active call
-        # player can call from cur_call + 1, up to total number of cards, as long as they have not already passed this round
-        # player can stash until calling as started
         if game.cur_call > 0:
             moves.append("p")
-        if game.cur_call == 0 and len(player.cards) > len(player.stash):
-            moves += ["s" + str(x) for x in player.cards]
-            # remove already stashed cards
-            for c in player.stash:
-                moves.remove("s" + str(c))
+        if game.cur_call == 0:
+            moves += ["s" + str(x) for x in player.getHand()]
         call_range = []
         stash_count = game.getAllStashCount()
         if stash_count > game.cur_call:
