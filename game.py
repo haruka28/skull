@@ -93,6 +93,12 @@ class Game:
     def getAllPlayersAlive(self):
         return [player.id for player in self.players if not player.isOut()]
 
+    def nextPlayerAlive(self, player):
+        pid = (player.id + 1) % len(self.players)
+        while self.players[pid].isOut():
+            pid = (pid + 1) % len(self.players)
+        return self.players[pid]
+
     def start(self):
         self.initiate()
         turn = 1

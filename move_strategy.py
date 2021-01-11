@@ -50,12 +50,12 @@ class MoveStrategy:
         return m
 
     @staticmethod
-    def safeBluffRandomize(player, game):
+    def safeBluffRandomize(player, game, warrior = False):
         # Initiation round
         if player.shouldInitiate():
             return StashStrategy.defaultStash(player, game)
         moves = []
-        if game.cur_call > 0:
+        if game.cur_call > 0 and (not warrior or game.nextPlayerAlive(player).wins == 0):
             moves.append("p")
         if game.cur_call == 0:
             moves += ["s" + str(x) for x in player.getHand()]
@@ -71,7 +71,10 @@ class MoveStrategy:
         moves += ["c" + str(x) for x in call_range]
         # if player cant stash or pass, then they still need to call.
         if len(moves) == 0:
-            moves.append("c" + str(game.cur_call + 1))
+            if game.cur_call < game.getAllStashCount():
+                return "c" + str(game.cur_call + 1)
+            else:
+                return "p"
         # randomize
         m = moves[random.randint(0, len(moves) - 1)]
         if m.startswith("s"):
@@ -142,7 +145,13 @@ class MoveStrategy:
         if player.nonce > 4:
             return MoveStrategy.passiveSkull(player, game)
         else:
-            return MoveStrategy.safeBluffRandomize(player, game)
+            return MoveStrategy.aipincaihuiying(player, game)
+
+    @staticmethod
+    def randomizeWarrior(player, game):
+        # similar to safe bluff randomize, but also tries to stop next player from winning.
+        return MoveStrategy.safeBluffRandomize(player, game, warrior = True)
+        
 
 class StashStrategy:
     @staticmethod
