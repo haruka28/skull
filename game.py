@@ -65,11 +65,12 @@ class Game:
 
     def startChallenge(self):
         player = self.players[self.calling]
-        self.log("Player {} challenging".format(player.id))
+        self.log("Player {} challenging for {} {}".format(player.id, self.cur_call, "rose" if self.cur_call == 1 else "roses"))
         count = 0
         while count < self.cur_call:
             count += 1
             reveal_player = player.reveal(self)
+            self.log("Revealing player {}".format(reveal_player))
             reveal = self.players[reveal_player].stash.pop()
             if (reveal == 1):
                 self.log("Challenging player {} busted by player {}".format(player.id, reveal_player))
@@ -83,12 +84,12 @@ class Game:
         self.resetAfterChallenge()
 
     def resetAfterChallenge(self):
-        for player in self.players:
-            player.reset()
-            player.play(self)
         self.cur_call = 0
         self.passed = []
         self.calling = -1
+        for player in self.players:
+            player.reset()
+            player.play(self)
 
     def getAllPlayersAlive(self):
         return [player.id for player in self.players if not player.isOut()]

@@ -58,7 +58,7 @@ class MoveStrategy:
         if game.cur_call > 0 and (not warrior or game.nextPlayerAlive(player).wins == 0):
             moves.append("p")
         if game.cur_call == 0:
-            moves += ["s" + str(x) for x in player.getHand()]
+            moves += list(set(["s" + str(x) for x in player.getHand()]))
         call_range = []
         stash_count = game.getAllStashCount()
         if stash_count > game.cur_call:
@@ -151,7 +151,15 @@ class MoveStrategy:
     def randomizeWarrior(player, game):
         # similar to safe bluff randomize, but also tries to stop next player from winning.
         return MoveStrategy.safeBluffRandomize(player, game, warrior = True)
-        
+
+    @staticmethod
+    def raiseBar(player, game):
+        if game.cur_call > 0:
+            if 1 in player.stash:
+                return "p"
+            if game.cur_call < game.getAllStashCount() / 2:
+                return "c" + str(game.cur_call + 1)
+        return MoveStrategy.safeBluffRandomize(player, game)
 
 class StashStrategy:
     @staticmethod

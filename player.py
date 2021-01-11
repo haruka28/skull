@@ -37,7 +37,7 @@ class Player:
             return "Player {} has cards {} and stash {} ".format(self.id, self.cards, self.stash)
 
     def play(self, game):
-        if len(self.cards) == 0 or self.id in game.passed:
+        if self.isOut() or self.id in game.passed:
             # can only pass
             return "p"
         return self.move_strategy(self, game)
@@ -55,7 +55,6 @@ class Player:
         for i in self.stash:
             res.remove(i)
         return res
-
 
     def stashCard(self, card):
         self.stash.append(card)
