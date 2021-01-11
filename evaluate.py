@@ -13,11 +13,10 @@ if __name__ == "__main__":
     for i in range(RUNS):
         players = []
         # control
-        players.append(Player(0, move_strategy=MoveStrategy.passiveSkull))
-        for i in range(1, 4):
-            players.append(Player(i, move_strategy=MoveStrategy.safeBluffRandomize))
+        for i in range(0, 4):
+            players.append(Player(i, move_strategy=MoveStrategy.brute))
         # experiment
-        players.append(Player(4, move_strategy = MoveStrategy.aipincaihuiying))
+        players.append(Player(4, move_strategy = MoveStrategy.passiveSkull))
         starting = random.randint(0, 4)
         res[Game(players, RUNS <= 10, starting).start()] += 1
     print(res)

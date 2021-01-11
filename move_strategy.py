@@ -82,8 +82,8 @@ class MoveStrategy:
         return m
 
     @staticmethod
-    def aipincaihuiying(player, game):
-        # aipingcaihuiying prefers putting down rose and trusting others
+    def brute(player, game):
+        # brute prefers putting down rose and trusting others
         # Initiation round
         if player.shouldInitiate():
             if 0 in player.cards:
@@ -145,7 +145,7 @@ class MoveStrategy:
         if player.nonce > 4:
             return MoveStrategy.passiveSkull(player, game)
         else:
-            return MoveStrategy.aipincaihuiying(player, game)
+            return MoveStrategy.brute(player, game)
 
     @staticmethod
     def randomizeWarrior(player, game):
