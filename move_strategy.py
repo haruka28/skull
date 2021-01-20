@@ -94,7 +94,7 @@ class MoveStrategy:
         return m
 
     @staticmethod
-    def aipincaihuiying(player, game):
+    def aipincaihuiying(player, game, conservative = False):
         # aipingcaihuiying prefers putting down rose and trusting others
         # if no card in stash and self has card, stash a card.
         if len(player.stash) == 0 and len(player.cards) > 0:
@@ -124,7 +124,10 @@ class MoveStrategy:
                 safe_bluff = math.floor((stash_count - 1) / 5) + 1
                 if safe_bluff > game.cur_call:
                     call_range = range(game.cur_call + 1, safe_bluff + 1)
-        moves += ["c" + str(x) for x in call_range]
+        if not conservative:
+            moves += ["c" + str(x) for x in call_range]
+        elif len(call_range) > 0:
+            moves.append("c" + str(call_range[0]))
         # dont pass if can call
         if len(call_range) > 0 and "p" in moves:
             moves.remove("p")
@@ -164,6 +167,10 @@ class MoveStrategy:
             return MoveStrategy.passiveSkull(player, game)
         else:
             return MoveStrategy.safeBluffRandomize(player, game)
+
+    @staticmethod
+    def betterBrute(player, game):
+        return MoveStrategy.brute(player, game, conservative = True)
 
 class StashStrategy:
     @staticmethod
