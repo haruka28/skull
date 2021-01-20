@@ -37,10 +37,24 @@ class Player:
             return "Player {} has cards {} and stash {} ".format(self.id, self.cards, self.stash)
 
     def play(self, game):
-        if len(self.cards) == 0 or self.id in game.passed:
+        if self.isOut() or self.id in game.passed:
             # can only pass
             return "p"
         return self.move_strategy(self, game)
+
+    def isOut(self):
+        return len(self.cards) == 0
+
+    def shouldInitiate(self):
+        # if no card is in stash and has card in hand, stash a card to initiate this round.
+        return len(self.stash) == 0 and len(self.cards) > 0
+
+    def getHand(self):
+        # get all cards in hand. That is, not in stash.
+        res = self.cards.copy()
+        for i in self.stash:
+            res.remove(i)
+        return res
 
     def stashCard(self, card):
         self.stash.append(card)
@@ -53,7 +67,7 @@ class Player:
     def loseChallenge(self, game, killer):
         del self.cards[random.randint(0, len(self.cards) - 1)]
         # override next starting player
-        if len(self.cards) == 0:
+        if self.isOut():
             if killer == self.id:
                 # if a self busted player is out, they pick the next challenger.
                 return self.pick_strategy(self, game)

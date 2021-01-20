@@ -26,7 +26,7 @@ class Game:
     def getAllStashCount(self):
         res = 0
         for player in self.players:
-            if (len(player.cards) > 0):
+            if not player.isOut():
                 res += len(player.stash)
         return res
 
@@ -34,7 +34,7 @@ class Game:
         if self.winner >= 0: return
         alive = []
         for p in self.players:
-            if len(p.cards) > 0:
+            if not p.isOut():
                 alive.append(p.id)
         if len(alive) == 1:
             self.endGame(alive[0], "Player {} has won as the only player alive".format(alive[0]))
@@ -65,11 +65,12 @@ class Game:
 
     def startChallenge(self):
         player = self.players[self.calling]
-        self.log("Player {} challenging".format(player.id))
+        self.log("Player {} challenging for {} {}".format(player.id, self.cur_call, "rose" if self.cur_call == 1 else "roses"))
         count = 0
         while count < self.cur_call:
             count += 1
             reveal_player = player.reveal(self)
+            self.log("Revealing player {}".format(reveal_player))
             reveal = self.players[reveal_player].stash.pop()
             if (reveal == 1):
                 self.log("Challenging player {} busted by player {}".format(player.id, reveal_player))
@@ -83,19 +84,21 @@ class Game:
         self.resetAfterChallenge()
 
     def resetAfterChallenge(self):
-        for player in self.players:
-            player.reset()
-            player.play(self)
         self.cur_call = 0
         self.passed = []
         self.calling = -1
+        for player in self.players:
+            player.reset()
+            player.play(self)
 
     def getAllPlayersAlive(self):
-        res = []
-        for player in self.players:
-            if len(player.cards) > 0:
-                res.append(player.id)
-        return res
+        return [player.id for player in self.players if not player.isOut()]
+
+    def nextPlayerAlive(self, player):
+        pid = (player.id + 1) % len(self.players)
+        while self.players[pid].isOut():
+            pid = (pid + 1) % len(self.players)
+        return self.players[pid]
 
     def start(self):
         self.initiate()

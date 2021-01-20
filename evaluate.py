@@ -14,9 +14,9 @@ if __name__ == "__main__":
         players = []
         # control
         for i in range(4):
-            players.append(Player(i, move_strategy = MoveStrategy.brute))
+            players.append(Player(i, move_strategy = MoveStrategy.safeBluffRandomize))
         # experiment
-        players.append(Player(4, move_strategy = MoveStrategy.betterBrute))
+        players.append(Player(4, move_strategy = MoveStrategy.bolderBrute))
         starting = random.randint(0, 4)
-        res[Game(players, False, starting).start()] += 1
+        res[Game(players, RUNS <= 10, starting).start()] += 1
     print(res)

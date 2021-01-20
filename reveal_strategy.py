@@ -7,7 +7,7 @@ class RevealStrategy:
         for p in game.players:
             if p.id == player.id:
                 continue
-            if len(p.stash) > 0 and len(p.cards) > 0:
+            if len(p.stash) > 0 and not p.isOut():
                 ids.append(p.id)
         c = ids[random.randint(0, len(ids) - 1)]
         return c
